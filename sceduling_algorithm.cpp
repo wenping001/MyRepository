@@ -48,31 +48,34 @@ int main(int argc, char const *argv[])
         vec.push_back(p);
     }
     int option;
-    cout << "1. FCFS  2.SJF  3.HRRN"<<endl;
-    cin>>option;
-    switch (option)
-    {
-    case 1:{
-            calculate_ft(vec,num_of_process);
-            calculate_wt(vec,num_of_process);
-            calculate_tt(vec,num_of_process);
-            calculate_p_tt(vec,num_of_process);
-            for (int i = 0; i < num_of_process; i++)
-            {
-                vec[i].output_information();
-            }
-            cout<<calculate_avg_tt(vec,num_of_process)<<"\t"<<calculate_avg_p_tt(vec,num_of_process)<<endl;
-    }
-        break;
-    case 2:
-        break;
-    case 3:
-        break;
-    default:
-        break;
-    }
-    
-
+    do{
+        cout << "1. FCFS  2.SJF  3.HRRN  4.清屏 0.exit"<<endl;
+        cin>>option;
+        switch (option)
+        {
+        case 1:{
+                calculate_ft(vec,num_of_process);
+                calculate_wt(vec,num_of_process);
+                calculate_tt(vec,num_of_process);
+                calculate_p_tt(vec,num_of_process);
+                for (int i = 0; i < num_of_process; i++)
+                {
+                    vec[i].output_information();
+                }
+                cout<<calculate_avg_tt(vec,num_of_process)<<"\t"<<calculate_avg_p_tt(vec,num_of_process)<<endl;
+                cout<<endl;
+        }
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:system("clear");
+            break;
+        default:
+            break;
+        }
+    }while(option);
 }
 
 void calculate_ft(vector<process> &vec,int num_of_process){
