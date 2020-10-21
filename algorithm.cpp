@@ -31,7 +31,6 @@ void calculate_p_tt(vector<process> &vec,int num_of_process);    // 计算带权
 float calculate_avg_tt(vector<process> &vec,int num_of_process);    // 计算平均周转时间
 float calculate_avg_p_tt(vector<process> &vec,int num_of_process);    // 计算平均带权周转时间
 
-
 int main(int argc, char const *argv[])
 {   
     vector<process> vec;
@@ -114,6 +113,3 @@ void process::output_information(){
     cout << this->number<<"\t"<<this->arrive_time<<"\t"<<this->finish_time<<"\t"<<this->burst_time<<"\t"<<this->waiting_time<<"\t"<<this->turnaround_time<<"\t"<<this->p_turnaround_time<<endl; 
     cout<<endl;
 }
-
-// hello world
-//asf
