@@ -49,7 +49,7 @@ int main(int argc, char const *argv[])
     }
     int option;
     do{
-        cout << "1. FCFS  2.SJF  3.HRRN  4.清屏 0.exit"<<endl;
+        cout << "1. FCFS  2.SJF  3.HRRN  4.clear 0.exit"<<endl;
         cin>>option;
         switch (option)
         {
