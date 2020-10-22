@@ -15,15 +15,25 @@ class process
         int finish_time;       //完成时间
         int turnaround_time;   // 周转时间
         float p_turnaround_time;   // 带权周转时间
+        bool is_finished;          // 是否已运行
     public:
         process(int number,int arrive_time,int burst_time){
             this->number = number;
             this->arrive_time = arrive_time;
             this->burst_time = burst_time;
+            this->is_finished = false;
         }
+        process operator >(const process &p){
+            if(arrive_time > p.arrive_time){
+                return *this;
+            }
+            else
+            {
+                return p;
+            }
+        }  
         void output_information();  //输出信息
 };
-
 void calculate_ft(vector<process> &vec,int num_of_process);    //计算完成时间
 void calculate_wt(vector<process> &vec,int num_of_process);   // 计算等待时间
 void calculate_tt(vector<process> &vec,int num_of_process);     //计算周转时间
@@ -66,7 +76,32 @@ int main(int argc, char const *argv[])
                 cout<<endl;
         }
             break;
-        case 2:
+        case 2:{
+            do{
+                int min_at = INT8_MAX;
+                int index = 0;
+                vec[0].finish_time = vec[0].burst_time;
+                for (int i = 1; i < num_of_process; i++)
+                {
+                    if (vec[i].arrive_time < min_at)
+                    {
+                        min_at = vec[i].arrive_time;
+                        index = i;
+                    }                
+                }
+                vec[i].finish_time = vec[i].arrive_time + vec[i].burst_time;
+                num--;           
+            }while(num>0);  
+
+            calculate_tt(vec,num_of_process);
+            calculate_p_tt(vec,num_of_process);
+            for (int i = 0; i < num_of_process; i++)
+            {
+                vec[i].output_information();
+            }
+            cout<<calculate_avg_tt(vec,num_of_process)<<"\t"<<calculate_avg_p_tt(vec,num_of_process)<<endl;
+            cout<<endl;
+        }
             break;
         case 3:
             break;
