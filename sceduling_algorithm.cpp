@@ -34,13 +34,15 @@ class process
         }  
         void output_information();  //输出信息
 };
-void calculate_ft(vector<process> &vec,int num_of_process);    //计算完成时间
-void calculate_wt(vector<process> &vec,int num_of_process);   // 计算等待时间
 void calculate_tt(vector<process> &vec,int num_of_process);     //计算周转时间
 void calculate_p_tt(vector<process> &vec,int num_of_process);    // 计算带权周转时间
 float calculate_avg_tt(vector<process> &vec,int num_of_process);    // 计算平均周转时间
 float calculate_avg_p_tt(vector<process> &vec,int num_of_process);    // 计算平均带权周转时间
-
+void sort_by_at(vector<process> &vec,int num_of_processs);  //按照先后顺序排序
+// 定义排序法则-- 按到达时间升序排序
+bool compare(process a,process b){
+	return a.arrive_time < b.arrive_time;
+};
 int main(int argc, char const *argv[])
 {   
     vector<process> vec;
@@ -64,8 +66,14 @@ int main(int argc, char const *argv[])
         switch (option)
         {
         case 1:{
-                calculate_ft(vec,num_of_process);
-                calculate_wt(vec,num_of_process);
+                sort(vec.begin(),vec.end(),compare);
+                vec[0].finish_time = vec[0].burst_time;
+                vec[0].waiting_time = 0;
+                for (int i = 1; i < num_of_process; i++)
+                {
+                    vec[i].finish_time = vec[i-1].finish_time + vec[i].burst_time;
+                    vec[i].waiting_time = vec[i-1].finish_time - vec[i].arrive_time;   
+                }
                 calculate_tt(vec,num_of_process);
                 calculate_p_tt(vec,num_of_process);
                 for (int i = 0; i < num_of_process; i++)
@@ -77,21 +85,21 @@ int main(int argc, char const *argv[])
         }
             break;
         case 2:{
-            do{
-                int min_at = INT8_MAX;
-                int index = 0;
-                vec[0].finish_time = vec[0].burst_time;
-                for (int i = 1; i < num_of_process; i++)
-                {
-                    if (vec[i].arrive_time < min_at)
-                    {
-                        min_at = vec[i].arrive_time;
-                        index = i;
-                    }                
-                }
-                vec[i].finish_time = vec[i].arrive_time + vec[i].burst_time;
-                num--;           
-            }while(num>0);  
+            // do{
+            //     int min_at = INT8_MAX;
+            //     int index = 0;
+            //     vec[0].finish_time = vec[0].burst_time;
+            //     for (int i = 1; i < num_of_process; i++)
+            //     {
+            //         if (vec[i].arrive_time < min_at)
+            //         {
+            //             min_at = vec[i].arrive_time;
+            //             index = i;
+            //         }                
+            //     }
+            //     vec[i].finish_time = vec[i].arrive_time + vec[i].burst_time;
+            //     num--;           
+            // }while(num>0);  
 
             calculate_tt(vec,num_of_process);
             calculate_p_tt(vec,num_of_process);
@@ -113,23 +121,6 @@ int main(int argc, char const *argv[])
     }while(option);
 }
 
-void calculate_ft(vector<process> &vec,int num_of_process){
-
-    vec[0].finish_time = 0 + vec[0].burst_time;  
-    for (int i = 1; i < num_of_process; i++)
-    {
-        vec[i].finish_time = vec[i-1].finish_time + vec[i].burst_time;
-    }
-}
-
-void calculate_wt(vector<process> &vec,int num_of_process){ 
-    vec[0].waiting_time = 0; 
-    for (int i = 1; i < num_of_process; i++)
-    {
-        vec[i].waiting_time = vec[i-1].finish_time - vec[i].arrive_time;
-    } 
-}
-
 void calculate_tt(vector<process> &vec,int num_of_process){
     for (int i = 0; i < num_of_process; i++)
     {
@@ -143,7 +134,6 @@ void calculate_p_tt(vector<process> &vec,int num_of_process){
     {      
         vec[i].p_turnaround_time = vec[i].turnaround_time / vec[i].burst_time;
     }
-
 }
 
 float calculate_avg_tt(vector <process> &vec,int num_of_process){
@@ -162,6 +152,11 @@ float calculate_avg_p_tt(vector <process> &vec,int num_of_process){
          sum += vec[i].p_turnaround_time;
     }
     return  sum / num_of_process;
+}
+
+void sort_by_at(vector<process> &vec,int num_of_process){
+
+    
 }
 void process::output_information(){
     cout<<"No\tAT\tFT\tBT\tWT\tTT\tPTT" <<endl;;
