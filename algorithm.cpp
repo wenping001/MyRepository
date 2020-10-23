@@ -20,6 +20,7 @@ class process
             this->number = number;
             this->arrive_time = arrive_time;
             this->burst_time = burst_time;
+            this->waiting_time = 0;
         }
         void output_information();  //输出信息
 };
@@ -47,15 +48,46 @@ int main(int argc, char const *argv[])
         process p(i+1,at,bt); 
         vec.push_back(p);
     }
-    calculate_ft(vec,num_of_process);
-    calculate_wt(vec,num_of_process);
-    calculate_tt(vec,num_of_process);
-    calculate_p_tt(vec,num_of_process);
-    for (int i = 0; i < num_of_process; i++)
-    {
-        vec[i].output_information();
-    }
-    cout<<calculate_avg_tt(vec,num_of_process)<<"\t"<<calculate_avg_p_tt(vec,num_of_process)<<endl;
+        int option;
+    do{
+        cout << "1. FCFS  2.SJF  3.HRRN  4.clear 0.exit"<<endl;
+        cin>>option;
+        switch (option)
+        {
+        case 1:{
+            calculate_ft(vec,num_of_process);
+            calculate_wt(vec,num_of_process);
+            calculate_tt(vec,num_of_process);
+            calculate_p_tt(vec,num_of_process);
+            for (int i = 0; i < num_of_process; i++)
+            {
+                vec[i].output_information();
+            }
+            cout<<calculate_avg_tt(vec,num_of_process)<<"\t"<<calculate_avg_p_tt(vec,num_of_process)<<endl;
+        }
+            break;
+        case 2:{
+
+
+            calculate_tt(vec,num_of_process);
+            calculate_p_tt(vec,num_of_process);
+            for (int i = 0; i < num_of_process; i++)
+            {
+                vec[i].output_information();
+            }
+            cout<<calculate_avg_tt(vec,num_of_process)<<"\t"<<calculate_avg_p_tt(vec,num_of_process)<<endl;
+            cout<<endl;
+        }
+            break;
+        case 3:
+            break;
+        case 4:system("clear");
+            break;
+        default:
+            break;
+        }
+    }while(option);
+    
 }
 
 void calculate_ft(vector<process> &vec,int num_of_process){
@@ -82,13 +114,11 @@ void calculate_tt(vector<process> &vec,int num_of_process){
     }
 }
 
-void calculate_p_tt(vector<process> &vec,int num_of_process){
-    
+void calculate_p_tt(vector<process> &vec,int num_of_process){  
     for (int i = 0; i < num_of_process; i++)
     {      
         vec[i].p_turnaround_time = vec[i].turnaround_time / vec[i].burst_time;
     }
-
 }
 
 float calculate_avg_tt(vector <process> &vec,int num_of_process){
