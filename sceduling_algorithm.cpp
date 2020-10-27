@@ -55,9 +55,17 @@ bool compare2(process a,process b){
 int main(int argc, char const *argv[])
 {   
     vector<process> vec;
+    vector<process> temp;
     int num_of_process;
-    cout<<"Input number of processes (limit in 10)"<<endl;
-    cin >> num_of_process;
+    do{
+        cout<<"Input number of processes (limit in 10)"<<endl;
+        cin >> num_of_process;
+        if (num_of_process < 1 || num_of_process > 10 )
+        {
+            cout<< "please input a valid number: \n"<<endl;
+        }
+        
+    }while (num_of_process > 10 || num_of_process < 1);
     int i = 0;
     for (i = 0; i < num_of_process; i++)
     {
@@ -67,6 +75,7 @@ int main(int argc, char const *argv[])
         cin >> at >> bt;
         process p(i+1,at,bt); 
         vec.push_back(p);
+        temp.push_back(p);
     }
     int option;
     do{
