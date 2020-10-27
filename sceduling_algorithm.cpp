@@ -124,15 +124,15 @@ int main(int argc, char const *argv[])
             break;
         case 3:{
             // 全部到达后计算响应比
-            //如果都到达再算的话,等待时间=最后一个的提交时间-该作业到达的时刻
-            //响应比为（等待时间+要求服务时间）\要求服务时间=等待时间/要求服务时间+1
+            // 如果都到达再算的话,等待时间 = 最后一个的提交时间-该作业到达的时刻
+            // 响应比为（等待时间+要求服务时间）\要求服务时间=等待时间/要求服务时间+1
             sort(vec.begin(),vec.end(),compare);
             int last_at = vec.back().arrive_time;
             int rr[num_of_process];
             for (int j = 0; j < num_of_process; j++)
             {
-                vec[i].waiting_time = last_at - vec[i].arrive_time;
-                vec[i].rr_t = vec[i].waiting_time / vec[i].burst_time + 1;
+                vec[j].waiting_time = last_at - vec[j].arrive_time;
+                vec[j].rr_t = vec[i].waiting_time / vec[j].burst_time + 1;
             }
             int left_process = num_of_process;
             int current_time = 0;
@@ -151,7 +151,18 @@ int main(int argc, char const *argv[])
                         vec[i].rr_t = vec[i].waiting_time / vec[i].burst_time + 1;
                     }
                 }
-            }              
+            }
+
+            calculate_tt(vec,num_of_process);
+            calculate_p_tt(vec,num_of_process);
+            
+            for (int i = 0; i < num_of_process; i++)
+            {
+                vec[i].output_information();
+            }
+            cout<<calculate_avg_tt(vec,num_of_process)<<"\t"<<calculate_avg_p_tt(vec,num_of_process)<<endl;
+            cout<<endl;
+
         }
             break;
         case 4:system("clear");
