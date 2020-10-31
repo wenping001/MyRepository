@@ -16,27 +16,17 @@ class process
         int turnaround_time;   // 周转时间
         float p_turnaround_time;   // 带权周转时间
         float rr_t;             //响应比
-        bool is_finshed;        //是否已结束
     public:
         process(int number,int arrive_time,int burst_time){
             this->number = number;
             this->arrive_time = arrive_time;
             this->burst_time = burst_time;
-            is_finshed = false;
-        }
-        process operator >(const process &p){
-            if(arrive_time > p.arrive_time){
-                return *this;
-            }
-            else
-            {
-                return p;
-            }
-        }  
+        } 
         void output_information();  //输出信息
 };
 void calculate_tt(vector<process> &vec,int num_of_process);     //计算周转时间
 void calculate_p_tt(vector<process> &vec,int num_of_process);    // 计算带权周转时间
+int calculate_rrt(vector<process> &v,int num_of_process);    // 计算最大响应比
 float calculate_avg_tt(vector<process> &vec,int num_of_process);    // 计算平均周转时间
 float calculate_avg_p_tt(vector<process> &vec,int num_of_process);    // 计算平均带权周转时间
 // 定义排序法则-- 按到达时间升序排序
@@ -54,7 +44,6 @@ bool compare2(process a,process b){
 };
 int main(int argc, char const *argv[])
 {   
-    vector<process> vec;
     vector<process> temp;
     int num_of_process;
     do{
@@ -74,7 +63,6 @@ int main(int argc, char const *argv[])
         int bt;
         cin >> at >> bt;
         process p(i+1,at,bt); 
-        vec.push_back(p);
         temp.push_back(p);
     }
     int option;
@@ -84,6 +72,7 @@ int main(int argc, char const *argv[])
         switch (option)
         {
         case 1:{
+                vector<process> vec(temp);      // 拷贝数组
                 sort(vec.begin(),vec.end(),compare);  ///按到达时间排序
                 vec[0].finish_time = vec[0].burst_time;  //先到的单独处理
                 vec[0].waiting_time = 0;
@@ -103,6 +92,7 @@ int main(int argc, char const *argv[])
         }
             break;
         case 2:{
+            vector<process> vec(temp);      // 拷贝数组
             sort(vec.begin(),vec.end(),compare);
             vec[0].finish_time = vec[0].burst_time;  //最短作业单独处理
             vec[0].waiting_time = 0;
@@ -123,39 +113,44 @@ int main(int argc, char const *argv[])
         }
             break;
         case 3:{
-            // 全部到达后计算响应比
-            // 如果都到达再算的话,等待时间 = 最后一个的提交时间-该作业到达的时刻
-            // 响应比为（等待时间+要求服务时间）\要求服务时间=等待时间/要求服务时间+1
-            sort(vec.begin(),vec.end(),compare);
-            int last_at = vec.back().arrive_time;
-            int rr[num_of_process];
-            for (int j = 0; j < num_of_process; j++)
-            {
-                vec[j].waiting_time = last_at - vec[j].arrive_time;
-                vec[j].rr_t = vec[i].waiting_time / vec[j].burst_time + 1;
-            }
-            int left_process = num_of_process;
+            vector<process> vec(temp);      // 拷贝数组
+            vector<int> v;
             int current_time = 0;
-            int k = 0;
-            while (left_process)
-            {
-                sort(vec.begin(),vec.end(),compare2);
-                current_time = vec.back().finish_time = 0 + vec.back().burst_time;
-                vec.back().rr_t = 0;
-                left_process--;
-                k++;
-                for (int i = 0; i < num_of_process - k; i++)
+            int count = 0;
+            int num = num_of_process;
+            do{
+                for (int i = 0; i < num_of_process; i++)
                 {
-                    if (!vec[i].is_finshed)
+                    if (vec[i].arrive_time <= current_time)
                     {
-                        vec[i].rr_t = vec[i].waiting_time / vec[i].burst_time + 1;
+                        v[count++] = i;
                     }
                 }
-            }
+                if (count == 1)
+                {
+                    int index = v[0];
+                    current_time  += vec[index].burst_time;
+                    num --;
+                }
+                else
+                {
+                    vector<process> p;
+                    for (int i = 0; i < count; i++)
+                    {
+                        int index = v[i];
+                        vec[index].waiting_time =  vec[index].arrive_time - current_time;
+                        vec[index].rr_t = (vec[index].waiting_time + vec[index].burst_time)/vec[index].waiting_time;
+                        p.push_back(vec[index]);
+                    }
+                    int max_index = calculate_rrt(p,count);
+                    current_time  += vec[max_index].burst_time;
+                    num--;
+                }
+            }while (num);                   
 
             calculate_tt(vec,num_of_process);
             calculate_p_tt(vec,num_of_process);
-            
+
             for (int i = 0; i < num_of_process; i++)
             {
                 vec[i].output_information();
@@ -167,7 +162,8 @@ int main(int argc, char const *argv[])
             break;
         case 4:system("clear");
             break;
-        default:
+        case 0:exit(0);
+        default:cout<<"invalid number!"<<endl;
             break;
         }
     }while(option);
@@ -186,6 +182,10 @@ void calculate_p_tt(vector<process> &vec,int num_of_process){
     {      
         vec[i].p_turnaround_time = vec[i].turnaround_time / vec[i].burst_time;
     }
+}
+
+int calculate_rrt(vector<process> &v,int num_of_process){
+
 }
 
 float calculate_avg_tt(vector <process> &vec,int num_of_process){
