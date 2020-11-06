@@ -14,19 +14,27 @@ class process
         int waiting_time;      // 等待时间
         int finish_time;       //完成时间
         int turnaround_time;   // 周转时间
-        float p_turnaround_time;   // 带权周转时间
-        float rr_t;             //响应比
+        double p_turnaround_time;   // 带权周转时间
+        double rr_t;             //响应比
+        bool isfinished;
     public:
+        process(){};
         process(int number,int arrive_time,int burst_time){
             this->number = number;
             this->arrive_time = arrive_time;
             this->burst_time = burst_time;
+            this->waiting_time = 0;
+            this->finish_time = 0;
+            this->turnaround_time = 0;
+            this->p_turnaround_time = 0;
+            this->rr_t = 0;
+            isfinished = false;
         } 
         void output_information();  //输出信息
 };
 void calculate_tt(vector<process> &vec,int num_of_process);     //计算周转时间
 void calculate_p_tt(vector<process> &vec,int num_of_process);    // 计算带权周转时间
-int calculate_rrt(vector<process> &v,int num_of_process);    // 计算最大响应比
+int calculate_rrt(process v[],int num_of_process);    // 计算最大响应比
 float calculate_avg_tt(vector<process> &vec,int num_of_process);    // 计算平均周转时间
 float calculate_avg_p_tt(vector<process> &vec,int num_of_process);    // 计算平均带权周转时间
 // 定义排序法则-- 按到达时间升序排序
@@ -101,6 +109,7 @@ int main(int argc, char const *argv[])
                 vec[i].finish_time = vec[i-1].finish_time + vec[i].burst_time;
                 vec[i].waiting_time = vec[i-1].finish_time - vec[i].arrive_time;   
             }
+
             calculate_tt(vec,num_of_process);
             calculate_p_tt(vec,num_of_process);
             
@@ -114,14 +123,14 @@ int main(int argc, char const *argv[])
             break;
         case 3:{
             vector<process> vec(temp);      // 拷贝数组
-            vector<int> v;
+            int v[num_of_process];
             int current_time = 0;
-            int count = 0;
             int num = num_of_process;
             do{
+                int count = 0;
                 for (int i = 0; i < num_of_process; i++)
                 {
-                    if (vec[i].arrive_time <= current_time)
+                    if (vec[i].arrive_time <= current_time && vec[i].isfinished == false)
                     {
                         v[count++] = i;
                     }
@@ -130,20 +139,25 @@ int main(int argc, char const *argv[])
                 {
                     int index = v[0];
                     current_time  += vec[index].burst_time;
+                    vec[index].finish_time = current_time;
+                    vec[index].isfinished = true;
                     num --;
                 }
                 else
                 {
-                    vector<process> p;
+                    process r[count];
                     for (int i = 0; i < count; i++)
                     {
                         int index = v[i];
-                        vec[index].waiting_time =  vec[index].arrive_time - current_time;
-                        vec[index].rr_t = (vec[index].waiting_time + vec[index].burst_time)/vec[index].waiting_time;
-                        p.push_back(vec[index]);
+                        vec[index].waiting_time =  current_time - vec[index].arrive_time;
+                        // rrt 是小数 将 int 强转为double
+                        vec[index].rr_t = 1 + double(vec[index].waiting_time)/vec[index].burst_time; 
+                        r[i] = vec[index];
                     }
-                    int max_index = calculate_rrt(p,count);
+                    int max_index = calculate_rrt(r,count);
                     current_time  += vec[max_index].burst_time;
+                    vec[max_index].finish_time = current_time;
+                    vec[max_index].isfinished = true;
                     num--;
                 }
             }while (num);                   
@@ -183,9 +197,19 @@ void calculate_p_tt(vector<process> &vec,int num_of_process){
         vec[i].p_turnaround_time = vec[i].turnaround_time / vec[i].burst_time;
     }
 }
+///  计算响应比最高的进程  并返回下标
+int calculate_rrt(process v[],int count){
+    int max_index = 0 ;
+    for (int i = 0; i < count; i++)
+    {
+        if (v[i].rr_t > v[max_index].rr_t)
+        {
+            max_index = i;
+        }
+    }
 
-int calculate_rrt(vector<process> &v,int num_of_process){
-
+    return max_index;
+    
 }
 
 float calculate_avg_tt(vector <process> &vec,int num_of_process){
