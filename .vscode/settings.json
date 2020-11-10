@@ -1,6 +1,8 @@
 {
     "files.associations": {
-        "algorithm": "cpp",
+        "*.cjson": "jsonc",
+        "*.wxss": "css",
+        "*.wxs": "javascript",
         "iostream": "cpp"
     }
 }
